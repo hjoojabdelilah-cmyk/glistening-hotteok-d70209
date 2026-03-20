@@ -1,0 +1,1136 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI Hub ✦ المركز الموحد</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Kufi+Arabic:wght@300;400;500;600;700;900&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+*, *::before, *::after { margin:0; padding:0; box-sizing:border-box; }
+
+:root {
+  --bg:       #080810;
+  --bg2:      #0c0c18;
+  --bg3:      #10101f;
+  --panel:    #13131f;
+  --panel2:   #181828;
+  --border:   rgba(120,120,200,0.12);
+  --border2:  rgba(120,120,200,0.22);
+  --c1:       #818cf8;  /* indigo */
+  --c2:       #c084fc;  /* purple */
+  --c3:       #38bdf8;  /* sky */
+  --c4:       #34d399;  /* emerald */
+  --c5:       #fb923c;  /* orange */
+  --c6:       #f472b6;  /* pink */
+  --text:     #e2e2f0;
+  --text2:    #9090b8;
+  --text3:    #5a5a80;
+  --mono:     'IBM Plex Mono', monospace;
+  --sans:     'Noto Kufi Arabic', sans-serif;
+  --radius:   16px;
+  --sidebar:  260px;
+}
+
+html { font-size:15px; }
+body {
+  font-family: var(--sans);
+  background: var(--bg);
+  color: var(--text);
+  min-height: 100vh;
+  display: flex;
+  overflow: hidden;
+}
+
+/* ── CANVAS BACKGROUND ── */
+#bgCanvas {
+  position: fixed; inset:0; z-index:0;
+  pointer-events:none; opacity:0.6;
+}
+
+/* ── SIDEBAR ── */
+.sidebar {
+  width: var(--sidebar);
+  min-height: 100vh;
+  background: var(--panel);
+  border-left: 1px solid var(--border);
+  display: flex;
+  flex-direction: column;
+  position: fixed;
+  right: 0; top: 0; bottom: 0;
+  z-index: 20;
+  transition: transform 0.3s cubic-bezier(0.4,0,0.2,1);
+}
+
+.sidebar-logo {
+  padding: 22px 20px 18px;
+  border-bottom: 1px solid var(--border);
+  display: flex; align-items:center; gap:12px;
+}
+
+.logo-mark {
+  width:38px; height:38px;
+  background: linear-gradient(135deg, var(--c1), var(--c2));
+  border-radius:10px;
+  display:flex; align-items:center; justify-content:center;
+  font-size:18px;
+  box-shadow: 0 0 20px rgba(129,140,248,0.35);
+  flex-shrink:0;
+}
+
+.logo-name {
+  font-size:17px; font-weight:700;
+  background: linear-gradient(90deg, #fff 30%, var(--c2));
+  -webkit-background-clip:text; -webkit-text-fill-color:transparent;
+  letter-spacing:0.5px;
+}
+
+.logo-sub { font-size:10px; color:var(--text3); letter-spacing:1px; margin-top:1px; }
+
+/* Tools nav */
+.sidebar-section { padding:14px 14px 6px; }
+.sidebar-label { font-size:10px; letter-spacing:1.5px; color:var(--text3); text-transform:uppercase; margin-bottom:8px; padding-right:6px; }
+
+.tool-btn {
+  width:100%; display:flex; align-items:center; gap:10px;
+  padding:10px 12px; border-radius:10px;
+  border:none; background:transparent; color:var(--text2);
+  font-family:var(--sans); font-size:13px;
+  cursor:pointer; transition:all 0.2s; text-align:right;
+  position:relative;
+  margin-bottom:2px;
+}
+.tool-btn .t-icon {
+  width:30px; height:30px; border-radius:8px; flex-shrink:0;
+  display:flex; align-items:center; justify-content:center; font-size:15px;
+  transition: transform 0.2s;
+}
+.tool-btn .t-label { flex:1; }
+.tool-btn .t-check {
+  width:16px; height:16px; border-radius:50%;
+  border:1.5px solid var(--border2);
+  display:flex; align-items:center; justify-content:center;
+  font-size:9px; transition:all 0.2s; flex-shrink:0;
+}
+.tool-btn.on { color:var(--text); }
+.tool-btn.on .t-check { background:var(--c1); border-color:var(--c1); color:#fff; }
+.tool-btn:hover { background:var(--panel2); }
+.tool-btn:hover .t-icon { transform: scale(1.15); }
+
+/* History */
+.history-list { padding:6px 14px; flex:1; overflow-y:auto; }
+.history-list::-webkit-scrollbar { width:3px; }
+.history-list::-webkit-scrollbar-thumb { background:var(--border2); border-radius:2px; }
+
+.hist-item {
+  padding:8px 10px; border-radius:8px; cursor:pointer;
+  font-size:12px; color:var(--text3); transition:all 0.2s;
+  border:1px solid transparent; margin-bottom:4px;
+  white-space:nowrap; overflow:hidden; text-overflow:ellipsis;
+}
+.hist-item:hover { background:var(--panel2); color:var(--text2); border-color:var(--border); }
+.hist-item.active { background:rgba(129,140,248,0.1); color:var(--c1); border-color:rgba(129,140,248,0.25); }
+
+.sidebar-footer {
+  padding:14px; border-top:1px solid var(--border);
+  display:flex; flex-direction:column; gap:8px;
+}
+
+.theme-row { display:flex; gap:6px; justify-content:center; }
+.theme-dot {
+  width:20px; height:20px; border-radius:50%; cursor:pointer;
+  border:2px solid transparent; transition:all 0.2s;
+}
+.theme-dot.active, .theme-dot:hover { border-color:#fff; transform:scale(1.2); }
+
+/* ── MAIN ── */
+.main {
+  margin-right: var(--sidebar);
+  flex:1; display:flex; flex-direction:column;
+  height:100vh; overflow:hidden;
+  position:relative; z-index:1;
+}
+
+/* TOP BAR */
+.topbar {
+  height:58px; display:flex; align-items:center; justify-content:space-between;
+  padding:0 28px;
+  border-bottom:1px solid var(--border);
+  background:rgba(8,8,16,0.7);
+  backdrop-filter:blur(20px);
+  flex-shrink:0;
+}
+
+.topbar-left { display:flex; align-items:center; gap:14px; }
+.topbar-title { font-size:15px; font-weight:600; }
+.topbar-badge {
+  font-size:10px; letter-spacing:1px; text-transform:uppercase;
+  background:rgba(129,140,248,0.12); border:1px solid rgba(129,140,248,0.25);
+  border-radius:20px; padding:4px 10px; color:var(--c1);
+}
+
+.topbar-right { display:flex; align-items:center; gap:10px; }
+.icon-btn {
+  width:34px; height:34px; border-radius:8px;
+  border:1px solid var(--border); background:var(--panel);
+  color:var(--text2); font-size:15px; cursor:pointer;
+  display:flex; align-items:center; justify-content:center;
+  transition:all 0.2s;
+}
+.icon-btn:hover { background:var(--panel2); border-color:var(--border2); color:var(--text); }
+
+/* GOAL BAR */
+.goalbar {
+  padding:20px 28px;
+  border-bottom:1px solid var(--border);
+  background:var(--bg2);
+  flex-shrink:0;
+}
+
+.goal-wrap {
+  display:flex; gap:12px; align-items:flex-end;
+  background:var(--panel);
+  border:1px solid var(--border);
+  border-radius:var(--radius);
+  padding:16px 18px;
+  transition:all 0.3s;
+  position:relative; overflow:hidden;
+}
+.goal-wrap::before {
+  content:'';
+  position:absolute; inset:0;
+  background:linear-gradient(135deg, rgba(129,140,248,0.04), rgba(192,132,252,0.04));
+  opacity:0; transition:opacity 0.3s;
+}
+.goal-wrap:focus-within { border-color:rgba(129,140,248,0.4); box-shadow:0 0 0 3px rgba(129,140,248,0.08); }
+.goal-wrap:focus-within::before { opacity:1; }
+
+.goal-icon { font-size:20px; margin-bottom:2px; flex-shrink:0; }
+
+.goal-textarea {
+  flex:1; background:transparent; border:none; outline:none;
+  color:var(--text); font-family:var(--sans); font-size:14px;
+  resize:none; min-height:44px; max-height:100px;
+  direction:rtl; line-height:1.7;
+}
+.goal-textarea::placeholder { color:var(--text3); }
+
+.run-btn {
+  background:linear-gradient(135deg, var(--c1), var(--c2));
+  border:none; border-radius:12px; padding:12px 22px;
+  color:#fff; font-family:var(--sans); font-size:13px; font-weight:700;
+  cursor:pointer; white-space:nowrap; flex-shrink:0;
+  box-shadow:0 4px 20px rgba(129,140,248,0.3);
+  transition:all 0.25s; position:relative; overflow:hidden;
+}
+.run-btn::after {
+  content:'';
+  position:absolute; inset:0;
+  background:linear-gradient(135deg, rgba(255,255,255,0.15), transparent);
+  opacity:0; transition:opacity 0.2s;
+}
+.run-btn:hover { transform:translateY(-2px); box-shadow:0 8px 28px rgba(129,140,248,0.45); }
+.run-btn:hover::after { opacity:1; }
+.run-btn:active { transform:translateY(0); }
+.run-btn:disabled { opacity:0.5; transform:none; cursor:not-allowed; }
+
+/* CHIPS */
+.chips { display:flex; flex-wrap:wrap; gap:7px; margin-top:14px; }
+.chip {
+  background:var(--panel); border:1px solid var(--border);
+  border-radius:20px; padding:5px 13px;
+  font-size:12px; color:var(--text2);
+  cursor:pointer; transition:all 0.2s; white-space:nowrap;
+}
+.chip:hover { border-color:var(--c1); color:var(--c1); background:rgba(129,140,248,0.08); }
+
+/* CONTENT */
+.content {
+  flex:1; overflow:hidden; display:flex;
+  position:relative;
+}
+
+/* EMPTY STATE */
+.empty-state {
+  flex:1; display:flex; flex-direction:column;
+  align-items:center; justify-content:center;
+  text-align:center; padding:40px;
+  animation:fadeUp 0.6s ease both;
+}
+
+.empty-icon { font-size:64px; margin-bottom:24px; opacity:0.6; animation:floatIcon 4s ease-in-out infinite; }
+@keyframes floatIcon { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-12px)} }
+
+.empty-title { font-size:26px; font-weight:700; margin-bottom:10px; }
+.empty-title span { background:linear-gradient(135deg, var(--c1), var(--c2)); -webkit-background-clip:text; -webkit-text-fill-color:transparent; }
+.empty-sub { color:var(--text2); font-size:14px; max-width:400px; line-height:1.8; }
+
+.feature-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:12px; margin-top:30px; max-width:600px; }
+.feature-card {
+  background:var(--panel); border:1px solid var(--border);
+  border-radius:12px; padding:16px;
+  font-size:12px; color:var(--text2); text-align:center; transition:all 0.3s;
+}
+.feature-card:hover { border-color:var(--c1); background:rgba(129,140,248,0.06); }
+.feature-card .f-icon { font-size:22px; margin-bottom:8px; }
+.feature-card .f-title { font-size:13px; font-weight:600; color:var(--text); margin-bottom:4px; }
+
+/* WORKSPACE PANEL */
+.workspace-panel {
+  flex:1; display:flex; flex-direction:column;
+  overflow:hidden; display:none;
+}
+.workspace-panel.visible { display:flex; animation:fadeUp 0.3s ease; }
+
+/* PIPELINE BAR */
+.pipeline-bar {
+  padding:14px 28px; border-bottom:1px solid var(--border);
+  background:var(--bg2); flex-shrink:0;
+  display:flex; align-items:center; gap:8px;
+  overflow-x:auto;
+}
+.pipeline-bar::-webkit-scrollbar { display:none; }
+
+.pip-step {
+  display:flex; align-items:center; gap:8px;
+  padding:7px 14px; border-radius:8px;
+  border:1px solid var(--border); background:var(--panel);
+  font-size:12px; color:var(--text3);
+  white-space:nowrap; flex-shrink:0;
+  transition:all 0.35s;
+}
+.pip-step .pip-dot {
+  width:6px; height:6px; border-radius:50%;
+  background:var(--text3); transition:all 0.35s; flex-shrink:0;
+}
+.pip-step.running {
+  border-color:var(--c1); color:var(--c1);
+  background:rgba(129,140,248,0.08);
+  animation:pipPulse 1.2s ease-in-out infinite;
+}
+.pip-step.running .pip-dot { background:var(--c1); box-shadow:0 0 8px var(--c1); animation:dotBlink 0.8s infinite; }
+.pip-step.done { border-color:var(--c4); color:var(--c4); background:rgba(52,211,153,0.07); }
+.pip-step.done .pip-dot { background:var(--c4); }
+
+@keyframes pipPulse { 0%,100%{box-shadow:0 0 0 rgba(129,140,248,0)} 50%{box-shadow:0 0 12px rgba(129,140,248,0.3)} }
+@keyframes dotBlink { 0%,100%{opacity:1} 50%{opacity:0.2} }
+
+.pip-arrow { color:var(--text3); font-size:12px; flex-shrink:0; }
+
+/* SPLIT VIEW */
+.split {
+  flex:1; display:flex; overflow:hidden;
+}
+
+/* CHAT COLUMN */
+.chat-col {
+  flex:1; display:flex; flex-direction:column;
+  border-left:1px solid var(--border);
+  overflow:hidden;
+}
+
+.chat-col-header {
+  padding:12px 20px; border-bottom:1px solid var(--border);
+  font-size:12px; color:var(--text3); display:flex; align-items:center; gap:8px;
+  background:var(--bg2); flex-shrink:0;
+}
+
+.chat-messages {
+  flex:1; overflow-y:auto; padding:20px;
+  display:flex; flex-direction:column; gap:14px;
+}
+.chat-messages::-webkit-scrollbar { width:3px; }
+.chat-messages::-webkit-scrollbar-thumb { background:var(--border2); border-radius:2px; }
+
+.msg { max-width:88%; animation:msgSlide 0.3s ease both; }
+@keyframes msgSlide { from{opacity:0;transform:translateY(8px)} to{opacity:1;transform:translateY(0)} }
+
+.msg.user { margin-right:0; align-self:flex-start; }
+.msg.ai   { align-self:flex-end; }
+
+.msg-meta { font-size:11px; color:var(--text3); margin-bottom:5px; display:flex; align-items:center; gap:6px; }
+.msg-meta .agent-tag {
+  background:rgba(129,140,248,0.12); border-radius:4px;
+  padding:2px 7px; color:var(--c1); font-size:10px;
+}
+
+.bubble {
+  padding:13px 16px; border-radius:14px; font-size:13px; line-height:1.8;
+}
+.msg.user .bubble {
+  background:var(--panel); border:1px solid var(--border);
+  border-radius:14px 14px 14px 4px;
+}
+.msg.ai .bubble {
+  background:linear-gradient(135deg, rgba(129,140,248,0.1), rgba(192,132,252,0.1));
+  border:1px solid rgba(129,140,248,0.2);
+  border-radius:14px 14px 4px 14px;
+}
+
+.typing-indicator { display:flex; gap:5px; align-items:center; padding:4px 0; }
+.typing-indicator span {
+  width:7px; height:7px; border-radius:50%;
+  animation:bounce 1.2s ease-in-out infinite;
+}
+.typing-indicator span:nth-child(1){background:var(--c1);}
+.typing-indicator span:nth-child(2){background:var(--c2);animation-delay:0.2s;}
+.typing-indicator span:nth-child(3){background:var(--c3);animation-delay:0.4s;}
+@keyframes bounce{0%,60%,100%{transform:translateY(0)}30%{transform:translateY(-8px)}}
+
+/* OUTPUT COLUMN */
+.output-col {
+  width:45%; display:flex; flex-direction:column;
+  overflow:hidden; min-width:300px;
+}
+
+.output-header {
+  padding:12px 20px; border-bottom:1px solid var(--border);
+  display:flex; align-items:center; justify-content:space-between;
+  background:var(--bg2); flex-shrink:0;
+}
+
+.tab-row { display:flex; gap:4px; }
+.tab {
+  padding:5px 12px; border-radius:7px;
+  font-size:12px; color:var(--text3);
+  border:none; background:transparent;
+  cursor:pointer; transition:all 0.2s; font-family:var(--sans);
+}
+.tab.active { background:rgba(129,140,248,0.15); color:var(--c1); }
+
+.output-actions-row { display:flex; gap:6px; }
+.tiny-btn {
+  padding:5px 10px; border-radius:7px;
+  font-size:11px; color:var(--text2);
+  border:1px solid var(--border); background:var(--panel);
+  cursor:pointer; transition:all 0.2s; font-family:var(--sans);
+  display:flex; align-items:center; gap:4px;
+}
+.tiny-btn:hover { border-color:var(--c1); color:var(--c1); }
+.tiny-btn.glow { background:linear-gradient(135deg,var(--c1),var(--c2)); border-color:transparent; color:#fff; }
+.tiny-btn.glow:hover { box-shadow:0 3px 14px rgba(129,140,248,0.4); transform:translateY(-1px); }
+
+.output-body {
+  flex:1; overflow-y:auto; padding:20px;
+}
+.output-body::-webkit-scrollbar { width:3px; }
+.output-body::-webkit-scrollbar-thumb { background:var(--border2); border-radius:2px; }
+
+.output-text {
+  font-size:13px; line-height:1.9; color:var(--text);
+  white-space:pre-wrap;
+}
+.output-text:empty::before { content:'المخرج سيظهر هنا...'; color:var(--text3); }
+
+/* Streaming cursor */
+.stream-cursor::after { content:'▊'; color:var(--c1); animation:blink 0.8s step-end infinite; }
+@keyframes blink{0%,100%{opacity:1}50%{opacity:0}}
+
+/* Output empty state */
+.output-empty {
+  height:100%; display:flex; flex-direction:column;
+  align-items:center; justify-content:center; text-align:center; padding:30px;
+  color:var(--text3); font-size:13px;
+}
+.output-empty .oe-icon { font-size:40px; margin-bottom:16px; opacity:0.4; }
+
+/* STATS ROW */
+.stats-row {
+  padding:10px 20px; border-top:1px solid var(--border);
+  background:var(--bg2); display:flex; gap:20px; flex-wrap:wrap;
+  flex-shrink:0;
+}
+.stat-item { font-size:11px; color:var(--text3); display:flex; align-items:center; gap:6px; }
+.stat-item b { color:var(--c1); font-weight:600; }
+
+/* FOLLOWUP */
+.followup-bar {
+  padding:12px 20px; border-top:1px solid var(--border);
+  background:var(--bg2); display:flex; gap:10px; flex-shrink:0;
+}
+.followup-input {
+  flex:1; background:var(--panel); border:1px solid var(--border);
+  border-radius:10px; padding:10px 15px;
+  color:var(--text); font-family:var(--sans); font-size:13px;
+  outline:none; direction:rtl; transition:all 0.2s;
+}
+.followup-input::placeholder { color:var(--text3); }
+.followup-input:focus { border-color:rgba(129,140,248,0.4); }
+.send-btn {
+  background:linear-gradient(135deg,var(--c1),var(--c2));
+  border:none; border-radius:10px; padding:10px 18px;
+  color:#fff; font-family:var(--sans); font-size:13px; font-weight:600;
+  cursor:pointer; transition:all 0.2s; white-space:nowrap;
+}
+.send-btn:hover { transform:translateY(-1px); box-shadow:0 4px 14px rgba(129,140,248,0.35); }
+
+/* TOAST */
+.toast {
+  position:fixed; bottom:30px; left:50%; transform:translateX(-50%) translateY(20px);
+  background:var(--panel); border:1px solid var(--border2); border-radius:12px;
+  padding:12px 22px; font-size:13px; color:var(--text);
+  z-index:100; opacity:0; transition:all 0.3s;
+  box-shadow:0 10px 40px rgba(0,0,0,0.4);
+  white-space:nowrap;
+}
+.toast.show { opacity:1; transform:translateX(-50%) translateY(0); }
+
+/* PROGRESS RING */
+.progress-ring {
+  position:fixed; top:50%; left:50%;
+  transform:translate(-50%,-50%);
+  z-index:50; display:none; flex-direction:column;
+  align-items:center; gap:16px;
+}
+.progress-ring.visible { display:flex; }
+.ring-svg { animation:spin 1.5s linear infinite; }
+@keyframes spin{to{transform:rotate(360deg)}}
+.ring-label { font-size:13px; color:var(--text2); }
+
+/* SCROLLBAR */
+::-webkit-scrollbar{width:4px;height:4px}
+::-webkit-scrollbar-track{background:transparent}
+::-webkit-scrollbar-thumb{background:var(--border2);border-radius:2px}
+
+/* ANIMS */
+@keyframes fadeUp{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:translateY(0)}}
+
+/* RESPONSIVE */
+@media(max-width:900px){
+  .sidebar{transform:translateX(100%);z-index:99}
+  .sidebar.open{transform:translateX(0)}
+  .main{margin-right:0}
+  .output-col{display:none}
+  .chat-col{border-left:none}
+}
+@media(max-width:600px){
+  .feature-grid{grid-template-columns:1fr 1fr}
+  .topbar-title{display:none}
+}
+</style>
+</head>
+<body>
+
+<canvas id="bgCanvas"></canvas>
+
+<!-- SIDEBAR -->
+<aside class="sidebar" id="sidebar">
+  <div class="sidebar-logo">
+    <div class="logo-mark">✦</div>
+    <div>
+      <div class="logo-name">AI Hub</div>
+      <div class="logo-sub">UNIFIED PLATFORM</div>
+    </div>
+  </div>
+
+  <div class="sidebar-section">
+    <div class="sidebar-label">الأدوات الذكية</div>
+    <div id="toolList"></div>
+  </div>
+
+  <div class="sidebar-section" style="margin-top:4px">
+    <div class="sidebar-label">السجل</div>
+  </div>
+  <div class="history-list" id="historyList">
+    <div style="font-size:12px;color:var(--text3);padding:6px">لا يوجد سجل بعد</div>
+  </div>
+
+  <div class="sidebar-footer">
+    <div style="font-size:11px;color:var(--text3);text-align:center;margin-bottom:4px">ألوان الواجهة</div>
+    <div class="theme-row" id="themeRow"></div>
+  </div>
+</aside>
+
+<!-- MAIN -->
+<div class="main">
+
+  <!-- TOPBAR -->
+  <div class="topbar">
+    <div class="topbar-left">
+      <div class="topbar-title">مساحة العمل</div>
+      <div class="topbar-badge" id="activeCount">٠ أداة مفعّلة</div>
+    </div>
+    <div class="topbar-right">
+      <button class="icon-btn" title="مسح" onclick="clearAll()">🗑</button>
+      <button class="icon-btn" title="تصدير" onclick="exportAll()">⬇</button>
+      <button class="icon-btn" onclick="toggleSidebar()" id="menuBtn" style="display:none">☰</button>
+    </div>
+  </div>
+
+  <!-- GOAL BAR -->
+  <div class="goalbar">
+    <div class="goal-wrap" id="goalWrap">
+      <div class="goal-icon">🎯</div>
+      <textarea id="goalInput" class="goal-textarea" rows="2"
+        placeholder="صِف هدفك بالتفصيل… كلما كنت دقيقاً كلما كان المخرج أفضل"></textarea>
+      <button class="run-btn" id="runBtn" onclick="runWorkflow()">
+        ⚡ تنفيذ
+      </button>
+    </div>
+    <div class="chips" id="chipRow"></div>
+  </div>
+
+  <!-- CONTENT -->
+  <div class="content" id="content">
+
+    <!-- EMPTY -->
+    <div class="empty-state" id="emptyState">
+      <div class="empty-icon">🧠</div>
+      <div class="empty-title">كل الأدوات · <span>هدف واحد</span></div>
+      <div class="empty-sub">أدخل هدفك، فعّل الأدوات التي تحتاجها، واحصل على مخرج شامل جاهز للاستخدام</div>
+      <div class="feature-grid">
+        <div class="feature-card"><div class="f-icon">🔄</div><div class="f-title">خط تنفيذ ذكي</div>الأدوات تعمل معاً بالتسلسل</div>
+        <div class="feature-card"><div class="f-icon">💬</div><div class="f-title">محادثة مستمرة</div>عدّل واطرح أسئلة لاحقة</div>
+        <div class="feature-card"><div class="f-icon">📦</div><div class="f-title">مخرج متعدد الأشكال</div>كامل · ملخص · خطوات</div>
+        <div class="feature-card"><div class="f-icon">⚡</div><div class="f-title">سريع وفوري</div>نتائج في ثوانٍ</div>
+        <div class="feature-card"><div class="f-icon">🎨</div><div class="f-title">واجهة مخصصة</div>ألوان وأدوات حسب ذوقك</div>
+        <div class="feature-card"><div class="f-icon">📋</div><div class="f-title">سجل الجلسات</div>العودة لأي مخرج سابق</div>
+      </div>
+    </div>
+
+    <!-- WORKSPACE -->
+    <div class="workspace-panel" id="workspacePanel">
+
+      <!-- PIPELINE -->
+      <div class="pipeline-bar" id="pipelineBar"></div>
+
+      <!-- SPLIT -->
+      <div class="split">
+
+        <!-- CHAT -->
+        <div class="chat-col">
+          <div class="chat-col-header">
+            <span style="width:8px;height:8px;border-radius:50%;background:var(--c4);display:inline-block"></span>
+            المحادثة
+          </div>
+          <div class="chat-messages" id="chatMessages"></div>
+          <div class="followup-bar">
+            <input type="text" id="followInput" class="followup-input"
+              placeholder="تابع، عدّل، أو اسأل سؤالاً جديداً..."
+              onkeydown="if(event.key==='Enter')sendFollowup()">
+            <button class="send-btn" onclick="sendFollowup()">← إرسال</button>
+          </div>
+        </div>
+
+        <!-- OUTPUT -->
+        <div class="output-col">
+          <div class="output-header">
+            <div class="tab-row">
+              <button class="tab active" onclick="switchTab('full',this)">📄 كامل</button>
+              <button class="tab" onclick="switchTab('summary',this)">⚡ ملخص</button>
+              <button class="tab" onclick="switchTab('steps',this)">✅ خطوات</button>
+            </div>
+            <div class="output-actions-row">
+              <button class="tiny-btn glow" onclick="refine()">✨ تحسين</button>
+              <button class="tiny-btn" onclick="copyOut()">📋</button>
+              <button class="tiny-btn" onclick="downloadOut()">⬇</button>
+            </div>
+          </div>
+          <div class="output-body">
+            <div class="output-empty" id="outputEmpty">
+              <div class="oe-icon">📄</div>
+              المخرج سيظهر هنا فور اكتمال التنفيذ
+            </div>
+            <div class="output-text" id="outputText" style="display:none"></div>
+          </div>
+          <div class="stats-row" id="statsRow" style="display:none"></div>
+        </div>
+
+      </div>
+    </div>
+  </div><!-- /content -->
+
+</div><!-- /main -->
+
+<!-- TOAST -->
+<div class="toast" id="toast"></div>
+
+<script>
+/* ══════════════════════════════════════
+   DATA
+══════════════════════════════════════ */
+const TOOLS = [
+  {id:'researcher', icon:'🔍', label:'الباحث الذكي',   color:'#818cf8', desc:'تحليل وبحث'},
+  {id:'writer',     icon:'✍️', label:'الكاتب',         color:'#c084fc', desc:'محتوى إبداعي'},
+  {id:'strategist', icon:'🎯', label:'الاستراتيجي',   color:'#38bdf8', desc:'تخطيط وخطوات'},
+  {id:'analyst',    icon:'📊', label:'المحلل',         color:'#fb923c', desc:'أرقام ورؤى'},
+  {id:'marketer',   icon:'📣', label:'التسويق',        color:'#34d399', desc:'حملات فعّالة'},
+  {id:'editor',     icon:'✂️', label:'المحرر',         color:'#f43f5e', desc:'جودة ومراجعة'},
+  {id:'coder',      icon:'💻', label:'المطور',         color:'#a78bfa', desc:'أكواد وتقنية'},
+  {id:'designer',   icon:'🎨', label:'المصمم',         color:'#f472b6', desc:'أفكار بصرية'},
+];
+
+const CHIPS = [
+  {label:'📋 خطة عمل',      goal:'خطة عمل تجارية متكاملة لمشروع ناشئ مع تحليل السوق'},
+  {label:'✍️ محتوى',        goal:'كتابة محتوى تسويقي احترافي لمنتج جديد'},
+  {label:'📊 تحليل SWOT',   goal:'تحليل نقاط القوة والضعف والفرص والتهديدات للمشروع'},
+  {label:'🎬 سكريبت',       goal:'سكريبت فيديو يوتيوب جذاب مع عنوان قوي وهوك مؤثر'},
+  {label:'📱 سوشيال',       goal:'استراتيجية سوشيال ميديا كاملة لشهر مع جدول نشر'},
+  {label:'📧 إيميل مبيعات', goal:'إيميل مبيعات احترافي بمعدل تحويل عالي'},
+  {label:'🚀 إطلاق منتج',   goal:'خطة إطلاق منتج متكاملة من الفكرة للتنفيذ'},
+  {label:'💡 أفكار',        goal:'١٠ أفكار مشاريع مربحة لعام ٢٠٢٥'},
+];
+
+const THEMES = [
+  {name:'indigo',  c1:'#818cf8', c2:'#c084fc'},
+  {name:'cyan',    c1:'#22d3ee', c2:'#818cf8'},
+  {name:'emerald', c1:'#34d399', c2:'#38bdf8'},
+  {name:'rose',    c1:'#fb7185', c2:'#c084fc'},
+  {name:'amber',   c1:'#fbbf24', c2:'#fb923c'},
+];
+
+let activeTools = new Set(['researcher','writer','strategist']);
+let history = [];
+let conversation = [];
+let outputs = { full:'', summary:'', steps:'' };
+let currentTab = 'full';
+let t0;
+
+/* ══════════════════════════════════════
+   CANVAS BACKGROUND
+══════════════════════════════════════ */
+(function initCanvas(){
+  const c = document.getElementById('bgCanvas');
+  const ctx = c.getContext('2d');
+  let W,H,particles=[];
+
+  function resize(){ W=c.width=window.innerWidth; H=c.height=window.innerHeight; }
+  resize(); window.addEventListener('resize',resize);
+
+  for(let i=0;i<60;i++){
+    particles.push({
+      x:Math.random()*2000, y:Math.random()*1200,
+      r:Math.random()*1.5+0.3,
+      vx:(Math.random()-0.5)*0.15,
+      vy:(Math.random()-0.5)*0.15,
+      a:Math.random()*0.5+0.1,
+    });
+  }
+
+  function draw(){
+    ctx.clearRect(0,0,W,H);
+    // Grid
+    ctx.strokeStyle='rgba(120,120,200,0.04)';
+    ctx.lineWidth=1;
+    for(let x=0;x<W;x+=60){ ctx.beginPath();ctx.moveTo(x,0);ctx.lineTo(x,H);ctx.stroke(); }
+    for(let y=0;y<H;y+=60){ ctx.beginPath();ctx.moveTo(0,y);ctx.lineTo(W,y);ctx.stroke(); }
+    // Particles
+    particles.forEach(p=>{
+      ctx.beginPath();
+      ctx.arc(p.x%W, p.y%H, p.r, 0, Math.PI*2);
+      ctx.fillStyle=`rgba(129,140,248,${p.a})`;
+      ctx.fill();
+      p.x+=p.vx; p.y+=p.vy;
+    });
+    requestAnimationFrame(draw);
+  }
+  draw();
+})();
+
+/* ══════════════════════════════════════
+   INIT
+══════════════════════════════════════ */
+function init(){
+  renderToolList();
+  renderChips();
+  renderThemes();
+  updateCount();
+
+  // Mobile menu
+  if(window.innerWidth<=900){
+    document.getElementById('menuBtn').style.display='flex';
+  }
+}
+
+function renderToolList(){
+  document.getElementById('toolList').innerHTML = TOOLS.map(t=>`
+    <button class="tool-btn ${activeTools.has(t.id)?'on':''}" onclick="toggleTool('${t.id}')">
+      <div class="t-icon" style="background:${t.color}22;color:${t.color}">${t.icon}</div>
+      <div class="t-label">${t.label}</div>
+      <div class="t-check">${activeTools.has(t.id)?'✓':''}</div>
+    </button>
+  `).join('');
+}
+
+function toggleTool(id){
+  if(activeTools.has(id)) activeTools.delete(id);
+  else activeTools.add(id);
+  renderToolList();
+  updateCount();
+}
+
+function updateCount(){
+  document.getElementById('activeCount').textContent = `${activeTools.size} أداة مفعّلة`;
+}
+
+function renderChips(){
+  document.getElementById('chipRow').innerHTML = CHIPS.map(c=>`
+    <div class="chip" onclick="setGoal('${c.goal}')">${c.label}</div>
+  `).join('');
+}
+
+function renderThemes(){
+  document.getElementById('themeRow').innerHTML = THEMES.map((t,i)=>`
+    <div class="theme-dot ${i===0?'active':''}"
+      style="background:linear-gradient(135deg,${t.c1},${t.c2})"
+      onclick="applyTheme(${i},this)"></div>
+  `).join('');
+}
+
+function applyTheme(i, el){
+  const t = THEMES[i];
+  document.documentElement.style.setProperty('--c1', t.c1);
+  document.documentElement.style.setProperty('--c2', t.c2);
+  document.querySelectorAll('.theme-dot').forEach(d=>d.classList.remove('active'));
+  el.classList.add('active');
+}
+
+function setGoal(text){
+  document.getElementById('goalInput').value = text;
+  document.getElementById('goalInput').focus();
+}
+
+function toggleSidebar(){
+  document.getElementById('sidebar').classList.toggle('open');
+}
+
+/* ══════════════════════════════════════
+   WORKFLOW
+══════════════════════════════════════ */
+async function runWorkflow(){
+  const goal = document.getElementById('goalInput').value.trim();
+  if(!goal){ toast('من فضلك أدخل هدفك أولاً ⚠️'); return; }
+  if(activeTools.size===0){ toast('فعّل أداة واحدة على الأقل ⚠️'); return; }
+
+  const btn = document.getElementById('runBtn');
+  btn.disabled=true; btn.textContent='⏳ جارٍ...';
+  t0 = Date.now();
+
+  // Reset
+  conversation=[];
+  outputs={full:'',summary:'',steps:''};
+
+  // Show workspace
+  document.getElementById('emptyState').style.display='none';
+  const wp = document.getElementById('workspacePanel');
+  wp.classList.add('visible');
+
+  document.getElementById('chatMessages').innerHTML='';
+  document.getElementById('outputText').style.display='none';
+  document.getElementById('outputEmpty').style.display='flex';
+  document.getElementById('statsRow').style.display='none';
+  outputs={full:'',summary:'',steps:''};
+
+  const selected = TOOLS.filter(t=>activeTools.has(t.id));
+
+  // Pipeline
+  renderPipeline(selected);
+
+  // User message
+  addMsg('user', goal, '👤 أنت');
+
+  // Run
+  await execute(goal, selected);
+
+  btn.disabled=false; btn.textContent='⚡ تنفيذ';
+}
+
+function renderPipeline(tools){
+  document.getElementById('pipelineBar').innerHTML = [
+    `<span style="font-size:11px;color:var(--text3);white-space:nowrap">خط التنفيذ:</span>`,
+    ...tools.flatMap((t,i)=>[
+      `<div class="pip-step" id="pip-${t.id}">
+        <div class="pip-dot"></div>${t.icon} ${t.label}
+      </div>`,
+      i<tools.length-1?`<div class="pip-arrow">←</div>`:''
+    ])
+  ].join('');
+}
+
+function setPip(id,state){
+  const el=document.getElementById(`pip-${id}`);
+  if(el) el.className=`pip-step ${state}`;
+}
+
+async function execute(goal, tools){
+  for(let i=0;i<tools.length;i++){ setPip(tools[i].id,'running'); await sleep(350); }
+
+  const typingId = addTyping();
+
+  const sys = `أنت مركز ذكاء اصطناعي متكامل يعمل كفريق متخصص يضم: ${tools.map(t=>`${t.icon} ${t.label} (${t.desc})`).join('، ')}.
+
+قواعد:
+- اكتب بالعربية الفصيحة الواضحة
+- قسّم المخرج بعناوين واضحة لكل أداة
+- كن محدداً وعملياً
+- قدّم خطوات قابلة للتطبيق الفوري
+- ابدأ بـ: ✦ تقرير AI Hub الشامل
+- اجعل المخرج احترافياً وجاهزاً للاستخدام`;
+
+  const msgs = [
+    ...conversation,
+    {role:'user', content:`الهدف: ${goal}\n\nالأدوات: ${tools.map(t=>t.label).join('، ')}\n\nقدّم مخرجاً شاملاً ومفصلاً.`}
+  ];
+
+  try{
+    const r = await fetch('/.netlify/functions/chat',{
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body: JSON.stringify({model:'claude-sonnet-4-20250514',max_tokens:1000,system:sys,messages:msgs})
+    });
+    const d = await r.json();
+    removeTyping(typingId);
+
+    const text = d.content?.[0]?.text || '⚠️ لم يُرجع الذكاء الاصطناعي رداً.';
+    outputs.full = text;
+
+    conversation.push({role:'user',content:`الهدف: ${goal}`},{role:'assistant',content:text});
+
+    tools.forEach(t=>setPip(t.id,'done'));
+
+    addMsg('ai', text, '🧠 AI Hub', tools[0]?.label);
+    showOutput(text);
+    showStats(tools, text);
+    addHistory(goal);
+
+  }catch(e){
+    removeTyping(typingId);
+    tools.forEach(t=>setPip(t.id,''));
+    addMsg('ai','⚠️ خطأ في الاتصال. تحقق من الشبكة وأعد المحاولة.','❌ خطأ');
+  }
+}
+
+/* ══════════════════════════════════════
+   CHAT
+══════════════════════════════════════ */
+function addMsg(role, content, label, agent=''){
+  const area = document.getElementById('chatMessages');
+  const d = document.createElement('div');
+  d.className = `msg ${role}`;
+  d.innerHTML=`
+    <div class="msg-meta">
+      ${label}
+      ${agent?`<span class="agent-tag">${agent}</span>`:''}
+    </div>
+    <div class="bubble">${content.replace(/\n/g,'<br>').replace(/#{1,3} (.+)/g,'<strong>$1</strong>')}</div>
+  `;
+  area.appendChild(d);
+  area.scrollTop=area.scrollHeight;
+  return d;
+}
+
+let typingCounter=0;
+function addTyping(){
+  const id='typing-'+(++typingCounter);
+  const area=document.getElementById('chatMessages');
+  const d=document.createElement('div');
+  d.id=id; d.className='msg ai';
+  d.innerHTML=`
+    <div class="msg-meta">🧠 AI Hub يعمل...</div>
+    <div class="bubble"><div class="typing-indicator"><span></span><span></span><span></span></div></div>
+  `;
+  area.appendChild(d);
+  area.scrollTop=area.scrollHeight;
+  return id;
+}
+
+function removeTyping(id){
+  document.getElementById(id)?.remove();
+}
+
+async function sendFollowup(){
+  const inp=document.getElementById('followInput');
+  const text=inp.value.trim();
+  if(!text||conversation.length===0){toast('اكتب رسالتك أولاً');return;}
+  inp.value='';
+
+  addMsg('user',text,'👤 أنت');
+  conversation.push({role:'user',content:text});
+
+  const tid=addTyping();
+  try{
+    const r=await fetch('/.netlify/functions/chat',{
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({
+        model:'claude-sonnet-4-20250514',max_tokens:1000,
+        system:'أنت مساعد خبير. أجب بالعربية بشكل مفيد ومحدد.',
+        messages:conversation
+      })
+    });
+    const d=await r.json();
+    removeTyping(tid);
+    const reply=d.content?.[0]?.text||'تعذر الرد';
+    conversation.push({role:'assistant',content:reply});
+    addMsg('ai',reply,'🧠 AI Hub');
+    outputs.full=reply; outputs.summary=''; outputs.steps='';
+    showOutput(reply);
+  }catch{
+    removeTyping(tid);
+    addMsg('ai','⚠️ خطأ. أعد المحاولة.','❌ خطأ');
+  }
+}
+
+/* ══════════════════════════════════════
+   OUTPUT
+══════════════════════════════════════ */
+function showOutput(text){
+  document.getElementById('outputEmpty').style.display='none';
+  const ot=document.getElementById('outputText');
+  ot.style.display='block';
+  ot.textContent=text;
+  // Reset tabs
+  document.querySelectorAll('.tab').forEach((t,i)=>t.classList.toggle('active',i===0));
+  currentTab='full';
+}
+
+function showStats(tools,text){
+  const elapsed=((Date.now()-t0)/1000).toFixed(1);
+  const words=text.trim().split(/\s+/).length;
+  document.getElementById('statsRow').style.display='flex';
+  document.getElementById('statsRow').innerHTML=`
+    <div class="stat-item">⚡ وقت: <b>${elapsed}ث</b></div>
+    <div class="stat-item">📝 كلمات: <b>${words}</b></div>
+    <div class="stat-item">🤖 أدوات: <b>${tools.length}</b></div>
+    <div class="stat-item">✅ <b>مكتمل</b></div>
+  `;
+}
+
+async function switchTab(tab, el){
+  currentTab=tab;
+  document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
+  el?.classList.add('active');
+
+  const ot=document.getElementById('outputText');
+  if(tab==='full'){ ot.textContent=outputs.full; return; }
+
+  if(tab==='summary'&&!outputs.summary){
+    ot.textContent='⏳ جارٍ إنشاء الملخص...';
+    outputs.summary=await callClaude(`لخّص هذا المخرج في ٥ نقاط رئيسية بالعربية:\n\n${outputs.full}`);
+  }
+  if(tab==='steps'&&!outputs.steps){
+    ot.textContent='⏳ جارٍ استخراج خطوات العمل...';
+    outputs.steps=await callClaude(`استخرج خطوات العمل القابلة للتطبيق الفوري مرقّمة حسب الأولوية:\n\n${outputs.full}`);
+  }
+  ot.textContent=outputs[tab];
+}
+
+async function refine(){
+  if(!outputs.full){toast('لا يوجد مخرج للتحسين');return;}
+  const ot=document.getElementById('outputText');
+  ot.textContent='✨ جارٍ تحسين المخرج...';
+  const improved=await callClaude(`حسّن هذا المخرج: أضف تفاصيل أكثر، واجعله أكثر احترافية:\n\n${outputs.full}`);
+  outputs.full=improved; outputs.summary=''; outputs.steps='';
+  ot.textContent=improved;
+  toast('✨ تم تحسين المخرج');
+}
+
+async function callClaude(prompt){
+  try{
+    const r=await fetch('/.netlify/functions/chat',{
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({
+        model:'claude-sonnet-4-20250514',max_tokens:1000,
+        messages:[{role:'user',content:prompt}]
+      })
+    });
+    const d=await r.json();
+    return d.content?.[0]?.text||'تعذر الحصول على رد';
+  }catch{ return 'خطأ في الاتصال'; }
+}
+
+function copyOut(){
+  const t=document.getElementById('outputText').textContent;
+  if(!t){toast('لا يوجد محتوى للنسخ');return;}
+  navigator.clipboard.writeText(t).then(()=>toast('✅ تم النسخ'));
+}
+
+function downloadOut(){
+  const t=document.getElementById('outputText').textContent;
+  if(!t){toast('لا يوجد محتوى للتحميل');return;}
+  const b=new Blob([t],{type:'text/plain;charset=utf-8'});
+  const a=document.createElement('a');
+  a.href=URL.createObjectURL(b);
+  a.download='ai-hub-output.txt';
+  a.click();
+  toast('⬇️ جارٍ التحميل');
+}
+
+function clearAll(){
+  document.getElementById('emptyState').style.display='flex';
+  document.getElementById('workspacePanel').classList.remove('visible');
+  document.getElementById('chatMessages').innerHTML='';
+  document.getElementById('outputText').textContent='';
+  document.getElementById('outputText').style.display='none';
+  document.getElementById('outputEmpty').style.display='flex';
+  document.getElementById('statsRow').style.display='none';
+  conversation=[];
+  outputs={full:'',summary:'',steps:''};
+  toast('🗑 تم مسح مساحة العمل');
+}
+
+function exportAll(){
+  if(!outputs.full){toast('لا يوجد محتوى للتصدير');return;}
+  const text=`AI Hub — تصدير الجلسة\n${'═'.repeat(40)}\n\n${outputs.full}`;
+  const b=new Blob([text],{type:'text/plain;charset=utf-8'});
+  const a=document.createElement('a');
+  a.href=URL.createObjectURL(b);
+  a.download=`ai-hub-${Date.now()}.txt`;
+  a.click();
+  toast('⬇️ تم التصدير');
+}
+
+/* ══════════════════════════════════════
+   HISTORY
+══════════════════════════════════════ */
+function addHistory(goal){
+  const item={goal, output:outputs.full, time:new Date().toLocaleTimeString('ar-SA')};
+  history.unshift(item);
+  renderHistory();
+}
+
+function renderHistory(){
+  const list=document.getElementById('historyList');
+  if(!history.length){ list.innerHTML='<div style="font-size:12px;color:var(--text3);padding:6px">لا يوجد سجل بعد</div>'; return; }
+  list.innerHTML=history.slice(0,8).map((h,i)=>`
+    <div class="hist-item ${i===0?'active':''}" onclick="loadHistory(${i})">
+      ${h.goal.slice(0,35)}${h.goal.length>35?'...':''}
+    </div>
+  `).join('');
+}
+
+function loadHistory(i){
+  const h=history[i];
+  outputs.full=h.output; outputs.summary=''; outputs.steps='';
+  document.getElementById('emptyState').style.display='none';
+  document.getElementById('workspacePanel').classList.add('visible');
+  showOutput(h.output);
+  document.querySelectorAll('.hist-item').forEach((el,j)=>el.classList.toggle('active',j===i));
+  toast('📋 تم تحميل الجلسة السابقة');
+}
+
+/* ══════════════════════════════════════
+   TOAST
+══════════════════════════════════════ */
+function toast(msg,dur=2500){
+  const el=document.getElementById('toast');
+  el.textContent=msg;
+  el.classList.add('show');
+  setTimeout(()=>el.classList.remove('show'),dur);
+}
+
+function sleep(ms){ return new Promise(r=>setTimeout(r,ms)); }
+
+/* TEXTAREA auto-resize */
+document.getElementById('goalInput').addEventListener('input',function(){
+  this.style.height='auto';
+  this.style.height=Math.min(this.scrollHeight,100)+'px';
+});
+
+/* ══════════════════════════════════════
+   BOOT
+══════════════════════════════════════ */
+init();
+</script>
+</body>
+</html>
