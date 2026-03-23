@@ -1,57 +1,50 @@
+const https = require("https");
+
 exports.handler = async (event) => {
-  // Handle CORS preflight
+  const headers = {
+    "Access-Control-Allow-Origin": "*",
+    "Access-Control-Allow-Headers": "Content-Type",
+    "Access-Control-Allow-Methods": "POST, OPTIONS",
+    "Content-Type": "application/json"
+  };
+
   if (event.httpMethod === "OPTIONS") {
-    return {
-      statusCode: 200,
-      headers: {
-        "Access-Control-Allow-Origin": "*",
-        "Access-Control-Allow-Headers": "Content-Type",
-        "Access-Control-Allow-Methods": "POST, OPTIONS"
-      },
-      body: ""
-    };
+    return { statusCode: 200, headers, body: "" };
   }
 
-  if (event.httpMethod !== "POST") {
-    return { statusCode: 405, body: "Method Not Allowed" };
-  }
-
-  if (!process.env.ANTHROPIC_API_KEY) {
-    return {
-      statusCode: 500,
-      body: JSON.stringify({ error: "ANTHROPIC_API_KEY غير موجود في متغيرات البيئة" })
-    };
+  const apiKey = process.env.ANTHROPIC_API_KEY;
+  if (!apiKey) {
+    return { statusCode: 500, headers, body: JSON.stringify({ error: "API key missing" }) };
   }
 
   try {
     const body = JSON.parse(event.body);
+    const payload = JSON.stringify(body);
 
-    const response = await fetch("https://api.anthropic.com/v1/messages", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        "x-api-key": process.env.ANTHROPIC_API_KEY,
-        "anthropic-version": "2023-06-01"
-      },
-      body: JSON.stringify(body)
+    const result = await new Promise((resolve, reject) => {
+      const req = https.request({
+        hostname: "api.anthropic.com",
+        path: "/v1/messages",
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "Content-Length": Buffer.byteLength(payload),
+          "x-api-key": apiKey,
+          "anthropic-version": "2023-06-01"
+        }
+      }, (res) => {
+        let data = "";
+        res.on("data", c => data += c);
+        res.on("end", () => resolve({ status: res.statusCode, body: data }));
+      });
+      req.on("error", reject);
+      req.write(payload);
+      req.end();
     });
 
-    const data = await response.json();
+    return { statusCode: result.status, headers, body: result.body };
 
-    return {
-      statusCode: response.status,
-      headers: {
-        "Content-Type": "application/json",
-        "Access-Control-Allow-Origin": "*"
-      },
-      body: JSON.stringify(data)
-    };
-
-  } catch (error) {
-    return {
-      statusCode: 500,
-      headers: { "Access-Control-Allow-Origin": "*" },
-      body: JSON.stringify({ error: "خطأ في الخادم: " + error.message })
-    };
+  } catch (e) {
+    return { statusCode: 500, headers, body: JSON.stringify({ error: e.message }) };
   }
 };
