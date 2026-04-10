@@ -1,0 +1,630 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI Hub — دليل أدوات الذكاء الاصطناعي</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Kufi+Arabic:wght@300;400;500;600;700;900&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+*, *::before, *::after { margin:0; padding:0; box-sizing:border-box; }
+:root {
+  --bg:#07070f; --bg2:#0b0b18; --panel:#111120; --panel2:#16162a;
+  --border:rgba(130,130,220,0.12); --border2:rgba(130,130,220,0.25);
+  --c1:#818cf8; --c2:#c084fc; --c3:#34d399; --gold:#fbbf24;
+  --text:#e2e2f2; --text2:#8888aa; --text3:#44445a;
+  --sans:'Noto Kufi Arabic',sans-serif;
+}
+html { scroll-behavior:smooth; }
+body { font-family:var(--sans); background:var(--bg); color:var(--text); min-height:100vh; overflow-x:hidden; }
+
+body::before {
+  content:''; position:fixed; inset:0; z-index:0; pointer-events:none;
+  background:
+    radial-gradient(ellipse 60% 40% at 80% 0%, rgba(129,140,248,0.08) 0%, transparent 60%),
+    radial-gradient(ellipse 40% 30% at 10% 90%, rgba(192,132,252,0.06) 0%, transparent 60%),
+    linear-gradient(rgba(130,130,220,0.025) 1px, transparent 1px) 0 0 / 48px 48px,
+    linear-gradient(90deg,rgba(130,130,220,0.025) 1px,transparent 1px) 0 0 / 48px 48px;
+}
+
+.wrap { position:relative; z-index:1; max-width:1200px; margin:0 auto; padding:0 20px; }
+
+/* NAV */
+nav {
+  padding:16px 0; border-bottom:1px solid var(--border);
+  backdrop-filter:blur(20px); background:rgba(7,7,15,0.8);
+  position:sticky; top:0; z-index:50;
+}
+.nav-inner { display:flex; align-items:center; justify-content:space-between; gap:12px; }
+.nav-logo { display:flex; align-items:center; gap:10px; text-decoration:none; }
+.nav-mark {
+  width:36px; height:36px; border-radius:9px;
+  background:linear-gradient(135deg,var(--c1),var(--c2));
+  display:flex; align-items:center; justify-content:center;
+  font-size:16px; box-shadow:0 0 16px rgba(129,140,248,0.3); flex-shrink:0;
+}
+.nav-name { font-size:16px; font-weight:700; background:linear-gradient(90deg,#fff,var(--c2)); -webkit-background-clip:text; -webkit-text-fill-color:transparent; }
+.nav-links { display:flex; gap:8px; flex-wrap:wrap; }
+.nav-link {
+  font-size:12px; color:var(--text2); border:1px solid var(--border);
+  border-radius:8px; padding:6px 12px; text-decoration:none;
+  background:var(--panel); transition:all 0.2s; white-space:nowrap;
+}
+.nav-link:hover, .nav-link.active { border-color:var(--c1); color:var(--c1); background:rgba(129,140,248,0.08); }
+
+/* HERO */
+.hero { text-align:center; padding:60px 0 40px; animation:fadeUp 0.6s ease both; }
+.hero-tag {
+  display:inline-block; background:rgba(129,140,248,0.1);
+  border:1px solid rgba(129,140,248,0.25); border-radius:30px;
+  padding:6px 18px; font-size:12px; color:var(--c1); margin-bottom:20px; letter-spacing:1px;
+}
+.hero h1 { font-size:clamp(28px,5vw,56px); font-weight:900; line-height:1.15; margin-bottom:14px; }
+.hero h1 span { background:linear-gradient(135deg,var(--c1),var(--c2)); -webkit-background-clip:text; -webkit-text-fill-color:transparent; }
+.hero p { font-size:15px; color:var(--text2); max-width:550px; margin:0 auto 30px; line-height:1.8; }
+
+/* STATS */
+.stats-bar {
+  display:flex; justify-content:center; gap:30px; flex-wrap:wrap;
+  margin-bottom:40px;
+}
+.stat-pill {
+  background:var(--panel); border:1px solid var(--border);
+  border-radius:12px; padding:12px 22px; text-align:center;
+}
+.stat-num { font-size:22px; font-weight:900; background:linear-gradient(135deg,var(--c1),var(--c2)); -webkit-background-clip:text; -webkit-text-fill-color:transparent; }
+.stat-label { font-size:11px; color:var(--text2); margin-top:2px; }
+
+/* SEARCH & FILTERS */
+.controls { margin-bottom:32px; animation:fadeUp 0.6s ease 0.1s both; }
+.search-row { display:flex; gap:12px; margin-bottom:16px; }
+.search-box {
+  flex:1; background:var(--panel); border:1px solid var(--border);
+  border-radius:12px; padding:12px 18px; color:var(--text);
+  font-family:var(--sans); font-size:14px; outline:none; direction:rtl;
+  transition:all 0.3s;
+}
+.search-box:focus { border-color:rgba(129,140,248,0.4); box-shadow:0 0 0 3px rgba(129,140,248,0.08); }
+.search-box::placeholder { color:var(--text3); }
+
+.filters { display:flex; gap:8px; flex-wrap:wrap; }
+.filter-btn {
+  padding:7px 16px; border-radius:20px;
+  border:1px solid var(--border); background:var(--panel);
+  font-family:var(--sans); font-size:12px; color:var(--text2);
+  cursor:pointer; transition:all 0.2s; white-space:nowrap;
+}
+.filter-btn:hover { border-color:var(--border2); color:var(--text); }
+.filter-btn.active { background:rgba(129,140,248,0.12); border-color:var(--c1); color:var(--c1); }
+
+/* TOOLS GRID */
+.tools-grid {
+  display:grid; grid-template-columns:repeat(auto-fill,minmax(280px,1fr));
+  gap:16px; margin-bottom:60px;
+}
+
+.tool-card {
+  background:var(--panel); border:1px solid var(--border);
+  border-radius:18px; overflow:hidden;
+  transition:all 0.3s; position:relative;
+  animation:fadeUp 0.5s ease both;
+  display:flex; flex-direction:column;
+}
+.tool-card:hover { border-color:var(--border2); transform:translateY(-4px); box-shadow:0 16px 40px rgba(0,0,0,0.3); }
+
+.card-header { padding:20px 20px 14px; display:flex; align-items:flex-start; gap:14px; }
+.tool-logo {
+  width:52px; height:52px; border-radius:14px;
+  display:flex; align-items:center; justify-content:center;
+  font-size:26px; flex-shrink:0; border:1px solid var(--border);
+}
+.tool-info { flex:1; }
+.tool-name { font-size:16px; font-weight:800; margin-bottom:3px; }
+.tool-category {
+  display:inline-block; font-size:10px; letter-spacing:0.8px;
+  border-radius:6px; padding:2px 8px; font-weight:600;
+}
+.card-desc { padding:0 20px 14px; font-size:13px; color:var(--text2); line-height:1.7; flex:1; }
+
+.card-tags { padding:0 20px 14px; display:flex; flex-wrap:wrap; gap:6px; }
+.tag {
+  background:rgba(129,140,248,0.07); border:1px solid rgba(129,140,248,0.15);
+  border-radius:6px; padding:3px 10px; font-size:11px; color:var(--text2);
+}
+
+.card-footer {
+  padding:14px 20px; border-top:1px solid var(--border);
+  display:flex; gap:8px; align-items:center;
+  background:var(--panel2);
+}
+.free-badge {
+  font-size:10px; font-weight:700; padding:3px 10px; border-radius:6px;
+  flex-shrink:0;
+}
+.affiliate-btn {
+  flex:1; padding:9px 14px; border-radius:10px;
+  font-family:var(--sans); font-size:12px; font-weight:700;
+  cursor:pointer; border:none; transition:all 0.2s;
+  text-decoration:none; text-align:center; display:block;
+}
+.use-btn {
+  padding:9px 14px; border-radius:10px;
+  font-family:var(--sans); font-size:12px; font-weight:600;
+  cursor:pointer; border:1px solid var(--border); background:transparent;
+  color:var(--text2); transition:all 0.2s; white-space:nowrap;
+  text-decoration:none; display:block; text-align:center;
+}
+.use-btn:hover { border-color:var(--c1); color:var(--c1); }
+
+.commission-badge {
+  position:absolute; top:14px; left:14px;
+  background:linear-gradient(135deg,rgba(52,211,153,0.2),rgba(52,211,153,0.1));
+  border:1px solid rgba(52,211,153,0.3);
+  border-radius:8px; padding:3px 9px;
+  font-size:10px; font-weight:700; color:var(--c3);
+}
+
+/* AFFILIATE INFO */
+.affiliate-section {
+  background:linear-gradient(135deg,rgba(129,140,248,0.08),rgba(192,132,252,0.05));
+  border:1px solid rgba(129,140,248,0.2); border-radius:20px;
+  padding:36px; margin-bottom:50px; text-align:center;
+  animation:fadeUp 0.6s ease 0.3s both;
+}
+.affiliate-section h2 { font-size:24px; font-weight:800; margin-bottom:10px; }
+.affiliate-section h2 span { background:linear-gradient(135deg,var(--c3),#06b6d4); -webkit-background-clip:text; -webkit-text-fill-color:transparent; }
+.affiliate-section p { color:var(--text2); font-size:14px; margin-bottom:24px; max-width:600px; margin-left:auto; margin-right:auto; }
+
+.income-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:16px; max-width:700px; margin:0 auto; }
+.income-card {
+  background:var(--panel); border:1px solid var(--border);
+  border-radius:14px; padding:20px; text-align:center;
+}
+.income-amount { font-size:28px; font-weight:900; margin-bottom:4px; }
+.income-label { font-size:12px; color:var(--text2); }
+
+/* HOW TO */
+.howto-section { margin-bottom:60px; animation:fadeUp 0.6s ease 0.4s both; }
+.section-title { text-align:center; font-size:22px; font-weight:800; margin-bottom:28px; }
+.section-title span { background:linear-gradient(135deg,var(--c1),var(--c2)); -webkit-background-clip:text; -webkit-text-fill-color:transparent; }
+.steps-grid { display:grid; grid-template-columns:repeat(4,1fr); gap:14px; }
+.step-card {
+  background:var(--panel); border:1px solid var(--border);
+  border-radius:14px; padding:20px; text-align:center; transition:all 0.3s;
+}
+.step-card:hover { border-color:var(--c1); transform:translateY(-2px); }
+.step-num {
+  width:36px; height:36px; border-radius:10px;
+  background:linear-gradient(135deg,var(--c1),var(--c2));
+  display:flex; align-items:center; justify-content:center;
+  font-size:16px; font-weight:800; margin:0 auto 12px; color:#fff;
+}
+.step-title { font-size:14px; font-weight:700; margin-bottom:6px; }
+.step-desc { font-size:12px; color:var(--text2); line-height:1.6; }
+
+/* TOAST */
+.toast {
+  position:fixed; bottom:24px; left:50%;
+  transform:translateX(-50%) translateY(16px);
+  background:var(--panel); border:1px solid var(--border2);
+  border-radius:12px; padding:12px 22px;
+  font-size:13px; z-index:200; opacity:0; transition:all 0.3s;
+  box-shadow:0 10px 40px rgba(0,0,0,0.4);
+}
+.toast.show { opacity:1; transform:translateX(-50%) translateY(0); }
+
+@keyframes fadeUp { from{opacity:0;transform:translateY(16px)} to{opacity:1;transform:translateY(0)} }
+
+@media(max-width:768px) {
+  .income-grid { grid-template-columns:1fr 1fr; }
+  .steps-grid { grid-template-columns:1fr 1fr; }
+  .tools-grid { grid-template-columns:1fr; }
+  .nav-links { display:none; }
+}
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav>
+  <div class="wrap">
+    <div class="nav-inner">
+      <a href="index.html" class="nav-logo">
+        <div class="nav-mark">✦</div>
+        <div class="nav-name">AI Hub</div>
+      </a>
+      <div class="nav-links">
+        <a href="index.html" class="nav-link">🧠 المنصة</a>
+        <a href="tools.html" class="nav-link active">🛠 الأدوات</a>
+        <a href="pricing.html" class="nav-link">⭐ الأسعار</a>
+      </div>
+      <a href="index.html" style="text-decoration:none;background:linear-gradient(135deg,var(--c1),var(--c2));border-radius:8px;padding:7px 16px;font-size:12px;font-weight:700;color:#fff;white-space:nowrap;box-shadow:0 2px 10px rgba(129,140,248,0.3)">⚡ ابدأ مجاناً</a>
+    </div>
+  </div>
+</nav>
+
+<div class="wrap">
+
+  <!-- HERO -->
+  <div class="hero">
+    <div class="hero-tag">✦ أكثر من 20 أداة ذكاء اصطناعي</div>
+    <h1>كل أدوات الـ AI<br><span>في مكان واحد</span></h1>
+    <p>اكتشف أقوى أدوات الذكاء الاصطناعي، جربها مجاناً، واستخدمها مباشرة من منصتك</p>
+
+    <div class="stats-bar">
+      <div class="stat-pill"><div class="stat-num">20+</div><div class="stat-label">أداة ذكاء اصطناعي</div></div>
+      <div class="stat-pill"><div class="stat-num">8</div><div class="stat-label">تصنيف مختلف</div></div>
+      <div class="stat-pill"><div class="stat-num" style="background:linear-gradient(135deg,var(--c3),#06b6d4);-webkit-background-clip:text;-webkit-text-fill-color:transparent">$$$</div><div class="stat-label">عمولات Affiliate</div></div>
+    </div>
+  </div>
+
+  <!-- CONTROLS -->
+  <div class="controls">
+    <div class="search-row">
+      <input type="text" class="search-box" id="searchInput" placeholder="🔍  ابحث عن أداة..." oninput="filterTools()">
+    </div>
+    <div class="filters" id="filterBtns">
+      <button class="filter-btn active" onclick="setFilter('all',this)">🌐 الكل</button>
+      <button class="filter-btn" onclick="setFilter('كتابة',this)">✍️ كتابة</button>
+      <button class="filter-btn" onclick="setFilter('صور',this)">🎨 صور</button>
+      <button class="filter-btn" onclick="setFilter('فيديو',this)">🎬 فيديو</button>
+      <button class="filter-btn" onclick="setFilter('تصميم',this)">🖌 تصميم</button>
+      <button class="filter-btn" onclick="setFilter('برزنتيشن',this)">📊 برزنتيشن</button>
+      <button class="filter-btn" onclick="setFilter('أعمال',this)">💼 أعمال</button>
+      <button class="filter-btn" onclick="setFilter('كود',this)">💻 كود</button>
+    </div>
+  </div>
+
+  <!-- TOOLS GRID -->
+  <div class="tools-grid" id="toolsGrid"></div>
+
+  <!-- AFFILIATE INFO -->
+  <div class="affiliate-section">
+    <h2>💰 اكسب مع كل <span>أداة تُوصي بها</span></h2>
+    <p>كل أداة في هذا الدليل لها برنامج Affiliate — شارك رابطك واكسب عمولة على كل مشترك جديد</p>
+    <div class="income-grid">
+      <div class="income-card">
+        <div class="income-amount" style="background:linear-gradient(135deg,var(--c3),#06b6d4);-webkit-background-clip:text;-webkit-text-fill-color:transparent">20-40%</div>
+        <div class="income-label">متوسط العمولة الشهرية</div>
+      </div>
+      <div class="income-card">
+        <div class="income-amount" style="background:linear-gradient(135deg,var(--c1),var(--c2));-webkit-background-clip:text;-webkit-text-fill-color:transparent">$500+</div>
+        <div class="income-label">دخل شهري محتمل</div>
+      </div>
+      <div class="income-card">
+        <div class="income-amount" style="background:linear-gradient(135deg,var(--gold),#f97316);-webkit-background-clip:text;-webkit-text-fill-color:transparent">مدى الحياة</div>
+        <div class="income-label">عمولة متكررة للأبد</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- HOW TO -->
+  <div class="howto-section">
+    <div class="section-title">كيف <span>تبدأ بالكسب؟</span></div>
+    <div class="steps-grid">
+      <div class="step-card">
+        <div class="step-num">1</div>
+        <div class="step-title">اختر الأداة</div>
+        <div class="step-desc">اختر الأداة التي تناسب جمهورك وتؤمن بها</div>
+      </div>
+      <div class="step-card">
+        <div class="step-num">2</div>
+        <div class="step-title">سجّل Affiliate</div>
+        <div class="step-desc">اضغط "سجّل للعمولة" واحصل على رابطك الخاص</div>
+      </div>
+      <div class="step-card">
+        <div class="step-num">3</div>
+        <div class="step-title">شارك الرابط</div>
+        <div class="step-desc">شارك في سوشيال ميديا، يوتيوب، أو مدونتك</div>
+      </div>
+      <div class="step-card">
+        <div class="step-num">4</div>
+        <div class="step-title">اجمع العمولات</div>
+        <div class="step-desc">احصل على عمولة متكررة مع كل اشتراك جديد</div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+const TOOLS_DATA = [
+  // ── كتابة ──
+  {
+    id:'copyai', name:'Copy.ai', icon:'📝', category:'كتابة',
+    color:'#7c3aed', bg:'rgba(124,58,237,0.12)',
+    catColor:'rgba(124,58,237,0.15)', catText:'#a78bfa',
+    desc:'أداة كتابة محتوى بالذكاء الاصطناعي — مقالات، إعلانات، بوستات سوشيال، وصف منتجات بضغطة واحدة.',
+    tags:['مقالات','إعلانات','سوشيال','إيميل'],
+    free:'مجاني جزئياً', freeColor:'rgba(52,211,153,0.15)', freeText:'#34d399',
+    commission:'45%', commissionType:'متكرر',
+    affiliateUrl:'https://www.copy.ai/?via=aihub',
+    siteUrl:'https://copy.ai',
+    btnColor:'linear-gradient(135deg,#7c3aed,#a78bfa)',
+  },
+  {
+    id:'jasper', name:'Jasper AI', icon:'🤖', category:'كتابة',
+    color:'#f97316', bg:'rgba(249,115,22,0.12)',
+    catColor:'rgba(249,115,22,0.15)', catText:'#fb923c',
+    desc:'أقوى أداة لكتابة المحتوى التسويقي الاحترافي — مثالية للمسوقين والشركات.',
+    tags:['محتوى','تسويق','بلوق','SEO'],
+    free:'تجربة 7 أيام', freeColor:'rgba(251,191,36,0.15)', freeText:'#fbbf24',
+    commission:'30%', commissionType:'متكرر',
+    affiliateUrl:'https://jasper.ai/?fpr=aihub',
+    siteUrl:'https://jasper.ai',
+    btnColor:'linear-gradient(135deg,#f97316,#fb923c)',
+  },
+  {
+    id:'craftly', name:'Craftly.ai', icon:'🛍', category:'كتابة',
+    color:'#06b6d4', bg:'rgba(6,182,212,0.12)',
+    catColor:'rgba(6,182,212,0.15)', catText:'#38bdf8',
+    desc:'متخصصة في كتابة وصف المنتجات لمتاجر إلكترونية — مثالية لـ Amazon وShopify.',
+    tags:['وصف منتجات','تجارة','Amazon','Shopify'],
+    free:'مجاني جزئياً', freeColor:'rgba(52,211,153,0.15)', freeText:'#34d399',
+    commission:'30%', commissionType:'متكرر',
+    affiliateUrl:'https://craftly.ai?ref=aihub',
+    siteUrl:'https://craftly.ai',
+    btnColor:'linear-gradient(135deg,#06b6d4,#38bdf8)',
+  },
+  // ── صور ──
+  {
+    id:'midjourney', name:'Midjourney', icon:'🎨', category:'صور',
+    color:'#818cf8', bg:'rgba(129,140,248,0.12)',
+    catColor:'rgba(129,140,248,0.15)', catText:'#818cf8',
+    desc:'أشهر أداة لتوليد الصور بالذكاء الاصطناعي — جودة استثنائية لأي تصميم.',
+    tags:['صور AI','فن رقمي','تصميم','إبداع'],
+    free:'مدفوع', freeColor:'rgba(244,63,94,0.15)', freeText:'#f472b6',
+    commission:'20%', commissionType:'لمرة',
+    affiliateUrl:'https://midjourney.com?ref=aihub',
+    siteUrl:'https://midjourney.com',
+    btnColor:'linear-gradient(135deg,#818cf8,#c084fc)',
+  },
+  {
+    id:'gencraft', name:'Gencraft', icon:'🖼', category:'صور',
+    color:'#ec4899', bg:'rgba(236,72,153,0.12)',
+    catColor:'rgba(236,72,153,0.15)', catText:'#f472b6',
+    desc:'أداة مجانية لتحويل النص إلى صور واقعية — سهلة الاستخدام ومناسبة للمبتدئين.',
+    tags:['نص إلى صورة','مجاني','سهل','واقعي'],
+    free:'مجاني', freeColor:'rgba(52,211,153,0.15)', freeText:'#34d399',
+    commission:'25%', commissionType:'متكرر',
+    affiliateUrl:'https://gencraft.com/ref/aihub',
+    siteUrl:'https://gencraft.com',
+    btnColor:'linear-gradient(135deg,#ec4899,#f472b6)',
+  },
+  {
+    id:'imgcreator', name:'ImgCreator.ai', icon:'✨', category:'صور',
+    color:'#8b5cf6', bg:'rgba(139,92,246,0.12)',
+    catColor:'rgba(139,92,246,0.15)', catText:'#a78bfa',
+    desc:'إنشاء رسوميات احترافية وتصاميم بصرية بالذكاء الاصطناعي في ثوانٍ.',
+    tags:['رسوميات','تصميم','خلفيات','إعلانات'],
+    free:'مجاني جزئياً', freeColor:'rgba(52,211,153,0.15)', freeText:'#34d399',
+    commission:'30%', commissionType:'متكرر',
+    affiliateUrl:'https://imgcreator.zmo.ai?ref=aihub',
+    siteUrl:'https://imgcreator.zmo.ai',
+    btnColor:'linear-gradient(135deg,#8b5cf6,#a78bfa)',
+  },
+  // ── فيديو ──
+  {
+    id:'runway', name:'Runway', icon:'🎬', category:'فيديو',
+    color:'#10b981', bg:'rgba(16,185,129,0.12)',
+    catColor:'rgba(16,185,129,0.15)', catText:'#34d399',
+    desc:'أقوى أداة لإنشاء وتعديل الفيديوهات بالذكاء الاصطناعي — من النص إلى فيديو احترافي.',
+    tags:['نص إلى فيديو','تعديل','Gen-2','احترافي'],
+    free:'مجاني جزئياً', freeColor:'rgba(52,211,153,0.15)', freeText:'#34d399',
+    commission:'20%', commissionType:'متكرر',
+    affiliateUrl:'https://runwayml.com?ref=aihub',
+    siteUrl:'https://runwayml.com',
+    btnColor:'linear-gradient(135deg,#10b981,#34d399)',
+  },
+  {
+    id:'steveai', name:'Steve.ai', icon:'🎥', category:'فيديو',
+    color:'#f59e0b', bg:'rgba(245,158,11,0.12)',
+    catColor:'rgba(245,158,11,0.15)', catText:'#fbbf24',
+    desc:'تحويل النص أو المقالات إلى فيديوهات احترافية تلقائياً — مثالي للمحتوى التعليمي.',
+    tags:['نص إلى فيديو','تلقائي','تعليمي','أنيميشن'],
+    free:'تجربة مجانية', freeColor:'rgba(52,211,153,0.15)', freeText:'#34d399',
+    commission:'30%', commissionType:'متكرر',
+    affiliateUrl:'https://www.steve.ai/?ref=aihub',
+    siteUrl:'https://steve.ai',
+    btnColor:'linear-gradient(135deg,#f59e0b,#fbbf24)',
+  },
+  {
+    id:'ebsynth', name:'EbSynth', icon:'🎞', category:'فيديو',
+    color:'#6366f1', bg:'rgba(99,102,241,0.12)',
+    catColor:'rgba(99,102,241,0.15)', catText:'#818cf8',
+    desc:'تحويل الفيديوهات الحقيقية إلى أنيميشن فني بأسلوب فريد — أداة مبدعين.',
+    tags:['أنيميشن','فن','تحويل','فيديو'],
+    free:'مجاني', freeColor:'rgba(52,211,153,0.15)', freeText:'#34d399',
+    commission:'—', commissionType:'لا يوجد',
+    affiliateUrl:'https://ebsynth.com',
+    siteUrl:'https://ebsynth.com',
+    btnColor:'linear-gradient(135deg,#6366f1,#818cf8)',
+  },
+  {
+    id:'bithtv', name:'Bith.TV', icon:'📹', category:'فيديو',
+    color:'#14b8a6', bg:'rgba(20,184,166,0.12)',
+    catColor:'rgba(20,184,166,0.15)', catText:'#2dd4bf',
+    desc:'تعديل الفيديوهات بالذكاء الاصطناعي — قص، دمج، ترجمة، ومؤثرات تلقائية.',
+    tags:['تعديل','قص','ترجمة','مؤثرات'],
+    free:'مجاني جزئياً', freeColor:'rgba(52,211,153,0.15)', freeText:'#34d399',
+    commission:'25%', commissionType:'متكرر',
+    affiliateUrl:'https://bith.tv?ref=aihub',
+    siteUrl:'https://bith.tv',
+    btnColor:'linear-gradient(135deg,#14b8a6,#2dd4bf)',
+  },
+  // ── تصميم ──
+  {
+    id:'looka', name:'Looka.ai', icon:'🔷', category:'تصميم',
+    color:'#0ea5e9', bg:'rgba(14,165,233,0.12)',
+    catColor:'rgba(14,165,233,0.15)', catText:'#38bdf8',
+    desc:'تصميم شعار احترافي لشركتك بالذكاء الاصطناعي في دقيقتين — بدون خبرة تصميم.',
+    tags:['لوغو','هوية بصرية','شركة','علامة تجارية'],
+    free:'مجاني للمعاينة', freeColor:'rgba(251,191,36,0.15)', freeText:'#fbbf24',
+    commission:'30%', commissionType:'لمرة',
+    affiliateUrl:'https://looka.com?ref=aihub',
+    siteUrl:'https://looka.com',
+    btnColor:'linear-gradient(135deg,#0ea5e9,#38bdf8)',
+  },
+  {
+    id:'canva', name:'Canva AI', icon:'🎪', category:'تصميم',
+    color:'#06b6d4', bg:'rgba(6,182,212,0.12)',
+    catColor:'rgba(6,182,212,0.15)', catText:'#22d3ee',
+    desc:'أشهر أداة تصميم في العالم — الآن مع قدرات الذكاء الاصطناعي لتصميم كل شيء.',
+    tags:['تصميم','سوشيال','بنر','إنفوجرافيك'],
+    free:'مجاني', freeColor:'rgba(52,211,153,0.15)', freeText:'#34d399',
+    commission:'20%', commissionType:'متكرر',
+    affiliateUrl:'https://canva.com/affiliates?ref=aihub',
+    siteUrl:'https://canva.com',
+    btnColor:'linear-gradient(135deg,#06b6d4,#22d3ee)',
+  },
+  // ── برزنتيشن ──
+  {
+    id:'tome', name:'Tome.app', icon:'📊', category:'برزنتيشن',
+    color:'#8b5cf6', bg:'rgba(139,92,246,0.12)',
+    catColor:'rgba(139,92,246,0.15)', catText:'#a78bfa',
+    desc:'إنشاء عروض تقديمية احترافية ومذهلة بالذكاء الاصطناعي — من النص إلى برزنتيشن كامل.',
+    tags:['برزنتيشن','سلايدز','عرض','أعمال'],
+    free:'مجاني', freeColor:'rgba(52,211,153,0.15)', freeText:'#34d399',
+    commission:'30%', commissionType:'متكرر',
+    affiliateUrl:'https://tome.app?ref=aihub',
+    siteUrl:'https://tome.app',
+    btnColor:'linear-gradient(135deg,#8b5cf6,#a78bfa)',
+  },
+  {
+    id:'gamma', name:'Gamma.app', icon:'⚡', category:'برزنتيشن',
+    color:'#f97316', bg:'rgba(249,115,22,0.12)',
+    catColor:'rgba(249,115,22,0.15)', catText:'#fb923c',
+    desc:'أسرع طريقة لإنشاء عروض تقديمية ومستندات تفاعلية بالذكاء الاصطناعي.',
+    tags:['سلايدز','مستندات','تفاعلي','سريع'],
+    free:'مجاني', freeColor:'rgba(52,211,153,0.15)', freeText:'#34d399',
+    commission:'25%', commissionType:'متكرر',
+    affiliateUrl:'https://gamma.app?ref=aihub',
+    siteUrl:'https://gamma.app',
+    btnColor:'linear-gradient(135deg,#f97316,#fb923c)',
+  },
+  // ── أعمال ──
+  {
+    id:'claude', name:'Claude AI', icon:'🧠', category:'أعمال',
+    color:'#818cf8', bg:'rgba(129,140,248,0.15)',
+    catColor:'rgba(129,140,248,0.2)', catText:'#818cf8',
+    desc:'أذكى مساعد ذكاء اصطناعي — تحليل، كتابة، كود، استراتيجية، وحل أي مشكلة.',
+    tags:['مساعد','تحليل','استراتيجية','كتابة'],
+    free:'مجاني جزئياً', freeColor:'rgba(52,211,153,0.15)', freeText:'#34d399',
+    commission:'لا يوجد', commissionType:'—',
+    affiliateUrl:'https://claude.ai',
+    siteUrl:'https://claude.ai',
+    btnColor:'linear-gradient(135deg,#818cf8,#c084fc)',
+  },
+  {
+    id:'notion', name:'Notion AI', icon:'📓', category:'أعمال',
+    color:'#64748b', bg:'rgba(100,116,139,0.12)',
+    catColor:'rgba(100,116,139,0.15)', catText:'#94a3b8',
+    desc:'إدارة المشاريع والملاحظات مع مساعد AI مدمج — للفرق والأفراد.',
+    tags:['إدارة','ملاحظات','مشاريع','فريق'],
+    free:'مجاني', freeColor:'rgba(52,211,153,0.15)', freeText:'#34d399',
+    commission:'50%', commissionType:'لمرة',
+    affiliateUrl:'https://notion.so?ref=aihub',
+    siteUrl:'https://notion.so',
+    btnColor:'linear-gradient(135deg,#475569,#64748b)',
+  },
+  {
+    id:'zapier', name:'Zapier AI', icon:'⚡', category:'أعمال',
+    color:'#ff4a00', bg:'rgba(255,74,0,0.12)',
+    catColor:'rgba(255,74,0,0.15)', catText:'#f97316',
+    desc:'أتمتة سير العمل بين آلاف التطبيقات — وصّل كل أدواتك معاً تلقائياً.',
+    tags:['أتمتة','تكامل','سير عمل','ربط'],
+    free:'مجاني جزئياً', freeColor:'rgba(52,211,153,0.15)', freeText:'#34d399',
+    commission:'25%', commissionType:'متكرر',
+    affiliateUrl:'https://zapier.com/?utm_source=aihub',
+    siteUrl:'https://zapier.com',
+    btnColor:'linear-gradient(135deg,#ff4a00,#f97316)',
+  },
+  // ── كود ──
+  {
+    id:'github', name:'GitHub Copilot', icon:'💻', category:'كود',
+    color:'#6e40c9', bg:'rgba(110,64,201,0.12)',
+    catColor:'rgba(110,64,201,0.15)', catText:'#a78bfa',
+    desc:'مساعد برمجة بالذكاء الاصطناعي داخل محرر الكود — يكتب الكود معك في الوقت الحقيقي.',
+    tags:['كود','برمجة','مساعد','تطوير'],
+    free:'30 يوم مجاني', freeColor:'rgba(52,211,153,0.15)', freeText:'#34d399',
+    commission:'—', commissionType:'—',
+    affiliateUrl:'https://github.com/features/copilot',
+    siteUrl:'https://github.com/features/copilot',
+    btnColor:'linear-gradient(135deg,#6e40c9,#8b5cf6)',
+  },
+  {
+    id:'cursor', name:'Cursor AI', icon:'🖱', category:'كود',
+    color:'#2563eb', bg:'rgba(37,99,235,0.12)',
+    catColor:'rgba(37,99,235,0.15)', catText:'#60a5fa',
+    desc:'محرر كود مدعوم بالذكاء الاصطناعي — يبني ويصحح ويشرح الكود بشكل طبيعي.',
+    tags:['محرر كود','AI','تطوير','بناء'],
+    free:'مجاني جزئياً', freeColor:'rgba(52,211,153,0.15)', freeText:'#34d399',
+    commission:'—', commissionType:'—',
+    affiliateUrl:'https://cursor.sh?ref=aihub',
+    siteUrl:'https://cursor.sh',
+    btnColor:'linear-gradient(135deg,#2563eb,#3b82f6)',
+  },
+];
+
+let activeFilter = 'all';
+
+function renderTools(data) {
+  const grid = document.getElementById('toolsGrid');
+  if (!data.length) {
+    grid.innerHTML = '<div style="grid-column:1/-1;text-align:center;padding:60px;color:var(--text2)">🔍 لا توجد نتائج مطابقة</div>';
+    return;
+  }
+  grid.innerHTML = data.map((t, i) => `
+    <div class="tool-card" style="animation-delay:${i*0.04}s">
+      ${t.commission !== '—' && t.commission !== 'لا يوجد' ? `<div class="commission-badge">💰 ${t.commission} ${t.commissionType}</div>` : ''}
+      <div class="card-header">
+        <div class="tool-logo" style="background:${t.bg}">${t.icon}</div>
+        <div class="tool-info">
+          <div class="tool-name">${t.name}</div>
+          <div class="tool-category" style="background:${t.catColor};color:${t.catText}">${t.category}</div>
+        </div>
+      </div>
+      <div class="card-desc">${t.desc}</div>
+      <div class="card-tags">${t.tags.map(tag=>`<span class="tag">${tag}</span>`).join('')}</div>
+      <div class="card-footer">
+        <div class="free-badge" style="background:${t.freeColor};color:${t.freeText}">${t.free}</div>
+        ${t.commission !== '—' && t.commission !== 'لا يوجد' ? `
+          <a href="${t.affiliateUrl}" target="_blank" class="affiliate-btn" style="background:${t.btnColor};color:#fff">
+            سجّل وكسب 💰
+          </a>
+        ` : `
+          <a href="${t.siteUrl}" target="_blank" class="use-btn">جرّب الأداة ↗</a>
+        `}
+        <a href="${t.siteUrl}" target="_blank" class="use-btn">↗</a>
+      </div>
+    </div>
+  `).join('');
+}
+
+function setFilter(cat, el) {
+  activeFilter = cat;
+  document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+  el.classList.add('active');
+  filterTools();
+}
+
+function filterTools() {
+  const q = document.getElementById('searchInput').value.toLowerCase();
+  let data = TOOLS_DATA;
+  if (activeFilter !== 'all') data = data.filter(t => t.category === activeFilter);
+  if (q) data = data.filter(t => t.name.toLowerCase().includes(q) || t.desc.includes(q) || t.tags.some(tag => tag.includes(q)));
+  renderTools(data);
+}
+
+function toast(msg) {
+  const el = document.getElementById('toast');
+  el.textContent = msg;
+  el.classList.add('show');
+  setTimeout(() => el.classList.remove('show'), 2500);
+}
+
+renderTools(TOOLS_DATA);
+</script>
+</body>
+</html>
